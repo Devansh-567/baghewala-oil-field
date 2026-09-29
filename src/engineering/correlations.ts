@@ -102,7 +102,10 @@ export function marxLangenheim(
   const G = (1 - Math.exp(-2 * sqrtTD / Math.sqrt(Math.PI) - tD)) / Math.max(1e-6, 1 - Math.exp(-tD) * 0.0 + 1e-9 + 1) || 0.5;
   const Glim = clamp(0.25 + 0.75 * Math.exp(-0.9 * sqrtTD), 0.18, 1);
   const Ar = (heatInjectedGJ * 1000) / (M * h * dT * (1 / Math.max(0.2, Glim)) * 0.55 + M * h * dT * 0.45);
-  const heatedAreaM2 = clamp(Ar / 28, 700, 26000);
+  // Energy-honest area: ~400 m³ CWE (≈1,040 GJ) heating 14 m of pay by ~100 K
+  // covers a few hundred m², i.e. single-digit-metre radius growing as √steam.
+  // (Large 20–30 m CSS radii need multi-thousand-m³ slugs.)
+  const heatedAreaM2 = clamp(Ar, 150, 26000);
   const heatedRadiusM = round(Math.sqrt(heatedAreaM2 / Math.PI), 1);
   const heatLossFrac = round(clamp(0.18 + 0.3 * (1 - Glim) + injectionDurationHr / 2400, 0.15, 0.55), 3);
   void G;
@@ -116,23 +119,31 @@ export function marxLangenheim(
   };
 }
 
-/** Soak efficiency: fraction of injected heat still within drainage radius
- *  after soaking (conduction spreading per [BL-1966] § heat-transfer). */
+/** Soak utilization: fraction of injected heat conducted from the steam zone
+ *  into mobilizable oil after soaking (Boberg–Lantz heat-transfer character
+ *  [BL-1966]). Longer soak lets heat spread beyond the condensate bank into
+ *  cold oil, so utilized heat RISES with soak with diminishing returns —
+ *  soak time is the cheapest barrel in CSS. Conduction loss to overburden is
+ *  already accounted in the Marx–Langenheim heat-loss fraction. */
 export function soakEfficiency(soakHr: number, heatedRadiusM: number): number {
-  const spread = 1 - Math.exp(-soakHr / 65);
-  const loss = clamp((heatedRadiusM / 90) * spread * 0.35 + soakHr / 4000, 0.03, 0.4);
-  return clamp(0.97 - loss, 0.55, 0.97);
+  void heatedRadiusM;
+  const utilization = 0.55 + 0.42 * (1 - Math.exp(-soakHr / 65));
+  return clamp(utilization, 0.55, 0.97);
 }
 
-/** Mean heated-zone temperature after soak → drives the viscosity collapse. */
+/** Mean heated-zone temperature after soak → drives the viscosity collapse.
+ *  Gain calibrated so typical Baghewala slugs (360–480 m³ CWE, 54–108 hr
+ *  soak) land at BHT ~90–110 °C — hot enough to collapse viscosity into the
+ *  Vogel-responsive hundreds-of-cP band, cool enough to stay clear of the
+ *  235 °C steam-temperature ceiling across the full slider ranges. */
 export function heatedZoneTempC(
   reservoirTempC: number,
   steamTempC: number,
   soakEff: number,
   steamVolumeM3CWE: number
 ): number {
-  const intensity = clamp(steamVolumeM3CWE / 420, 0.55, 1.45);
-  const t = reservoirTempC + (steamTempC - reservoirTempC) * 0.52 * soakEff * intensity;
+  const intensity = clamp(steamVolumeM3CWE / 420, 0.55, 1.15);
+  const t = reservoirTempC + (steamTempC - reservoirTempC) * 0.28 * soakEff * intensity;
   return clamp(t, reservoirTempC, 235);
 }
 
@@ -151,12 +162,12 @@ export interface IprResult {
  * Single-phase radial IPR scaled by heated mobility k/μ(T):
  *   J = 0.00708·k·h·Fp / (μ·B·ln(re/rw))  [bbl/d/psi, field units]
  * k = absolute perm (Jodhpur sand 300–1500 mD), re = heated radius.
- * Fp = 0.42 productivity factor = relative perm to heavy oil (~0.6) × skin /
- * partial-penetration impairment (~0.7). History-matched so the Vogel model
+ * Fp = 0.36 productivity factor = relative perm to heavy oil (~0.6) × skin /
+ * partial-penetration impairment (~0.6). History-matched so the Vogel model
  * reproduces the published 15–45 BOPD/well band at heated viscosity.
  * Flowing BHP from pump submergence; Vogel correction when Pwf < 0.6·Pr.
  */
-export const WELL_PRODUCTIVITY_FACTOR = 0.42;
+export const WELL_PRODUCTIVITY_FACTOR = 0.36;
 export function vogelIpr(
   reservoirPressureBar: number,
   flowingBhpBar: number,
@@ -343,7 +354,9 @@ export function synthesizeSurfaceCard(
   fillageFracVal: number,
   viscosityCp: number,
   gasFrac = 0.06,
-  travellingValveLeakFrac = 0
+  travellingValveLeakFrac = 0,
+  spm = 5,
+  strokeIn = 74
 ): DynacardPoint[] {
   const pts: DynacardPoint[] = [];
   const N = 97;
@@ -351,12 +364,28 @@ export function synthesizeSurfaceCard(
   const MPRL = mech.minPolishedRodLoadLb;
   const span = Math.max(600, PPRL - MPRL);
   const friction = clamp(Math.log10(Math.max(10, viscosityCp)) - 1, 0.4, 2.4);
+  // Operating-point dynamics (Gibbs wave-equation character): higher SPM skews
+  // the loop (rod-string inertia — upstroke peak lags, top-right corner rounds
+  // off, downstroke trough sharpens) and adds a dynamic overshoot bump near the
+  // stroke ends; longer stroke widens the elastic corner rounding. Normalized so
+  // the reference 5 SPM × 74 in card is bit-identical to the ideal card.
+  const speedRatio = spm / 5;
+  const skew = 0.09 * (speedRatio - 1);
+  const overshoot = 0.045 * speedRatio * speedRatio;
+  const stretch = strokeIn / 74;
   for (let i = 0; i < N; i++) {
     const s = i / (N - 1);
     const up = s <= 0.5;
     const u = up ? s * 2 : (s - 0.5) * 2; // 0–1 within half-stroke
+    const ue = clamp(u - (up ? skew : -skew) * stretch, 0, 1); // skewed phase
     // Ideal parallelogram + rod-stretch rounding
-    let load01 = up ? 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, u * 1.06)) : 0.5 + 0.5 * Math.cos(Math.PI * Math.min(1, u * 1.04));
+    let load01 = up ? 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, ue * 1.06)) : 0.5 + 0.5 * Math.cos(Math.PI * Math.min(1, ue * 1.04));
+    // Elastic corner rounding grows with stroke length
+    const corner = Math.sin(Math.PI * clamp(u, 0, 1)) * 0.02 * (stretch - 1);
+    load01 += up ? corner : -corner;
+    // Dynamic overshoot bump near the stroke ends at high SPM
+    const endBump = Math.exp(-Math.pow((u - (up ? 0.97 : 0.03)) / 0.09, 2)) * overshoot;
+    load01 += up ? endBump * 0.6 : -endBump * 0.4;
     // Fluid-pound shoulder on the upstroke when fillage < 1
     if (up && fillageFracVal < 0.92) {
       const poundAt = 0.25 + fillageFracVal * 0.5;

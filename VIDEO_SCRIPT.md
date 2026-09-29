@@ -1,210 +1,207 @@
 # VIDEO SCRIPT — Baghewala Well-to-Surface Digital Twin (SIH26120)
 
-**Format:** single-take screen recording with voiceover, **target length 8–9 minutes**
-(allowed window 7–10). Pace: ~140 words/min — read the narration lines verbatim;
-they total ~1,230 words ≈ 8 min 45 s, leaving buffer for clicks and pauses.
+**Target length: 8–10 minutes** (allowed window 7–10; with the two insert scenes below, aim ~10 minutes).
+Read only the 🎙️ **SAY** lines out loud. They use short sentences and simple words on purpose — about 1,450 words total, roughly 10 minutes at a calm pace.
+**Already recorded scenes 1–4, 6, 7, 8?** Just record the three blocks marked 🔴 NEW / 🔴 REVISED below and splice them in — Scene 5 replaces your old pump part, Scenes 6A + 6B slot between Scene 6 and Scene 7.
 
-**In-app helper:** the project now has a built-in **▶ Guided Tour** button (sidebar,
-topbar, and Mission Brief hero). It walks a viewer through the same 15 stations as
-this script with on-screen narration cards, arrow-key navigation, and an autoplay
-mode. Use it for the live judge demo; use this file for the recorded video.
+**How to read this file while recording:**
 
----
+- 🎙️ **SAY** = the exact words to speak. Read these lines only.
+- 🖱️ **GO TO / CLICK / SHOW** = what your mouse must do. Do these silently while speaking.
+- ⏸️ **PAUSE** = stay quiet for a few seconds and let the judge look at the screen.
 
-## 1. Recording checklist (do this before pressing record)
-
-1. `npm install` → `npm run dev` → open the local URL (e.g. http://localhost:5173).
-2. Browser at **1920×1080**, 100% zoom, sidebar fully visible. Close other tabs.
-3. Internet **ON** — the field map loads live OpenStreetMap tiles.
-4. Reset state: reload once so every slider is at its default; go to `/` (Mission Brief).
-5. Open the **BGW-07** pages in order once, so charts are cached and render instantly.
-6. Microphone check: record 10 s, play back, confirm no fan noise. Keep water nearby.
-7. If anything lags mid-take, say *"Let me reload that panel"* — cut it in edit, never apologise to judges.
+**Backup for the live demo:** our app has a **▶ Guided Tour** button (sidebar, topbar, and home page). If judges ask to see the product live, click it — it walks them through the same screens by itself.
 
 ---
 
-## 2. The script
+## Before you press record (2 minutes)
 
-### SCENE 1 — Hook (0:00–0:45) · Screen: Mission Brief hero
-
-> **Say:** "In Rajasthan's Thar desert, Oil India's Baghewala field produces oil so
-> thick it barely flows — eleven thousand centipoise at fifty degrees, roughly the
-> consistency of cold honey. To produce it, engineers inject high-pressure steam to
-> heat the reservoir, then lift the oil with sucker-rod pumps. Today those two
-> decisions — how much steam, and how hard to pump — are made separately, by
-> different teams, from experience. As the rock cools, viscosity climbs, pumps gasp,
-> rods float and snap, steam is wasted, and production falls. Our project, the
-> Baghewala Well-to-Surface Digital Twin, fuses both halves into one coupled,
-> predictive, optimising system — built for problem statement SIH26120."
-
-**Do:** Let the hero badges sit on screen for 3 seconds. No clicks yet.
+1. Run the app (`npm install` → `npm run dev`) and open it in the browser.
+2. Make the browser full screen (1920×1080), close all other tabs.
+3. Internet must be ON — the field map loads real map pictures from the internet.
+4. Reload the page once so everything is fresh, and stay on the home page.
+5. Test your mic for 10 seconds. Keep water nearby.
 
 ---
 
-### SCENE 2 — The problem, crisply (0:45–1:40) · Screen: scroll to "The coupling judges asked for"
+## SCENE 1 — Introduction: who we are and what we built (0:00–1:00)
 
-> **Say:** "Here is the crux, and it fits in one chain. A steam slug heats a radius
-> of rock. Heat collapses viscosity — two orders of magnitude. Lower viscosity feeds
-> Vogel inflow. Inflow meets pump displacement at a single ratio called fillage.
-> Fillage sets rod load, rod fatigue, steam-oil ratio, and rupees per day. Change
-> anything on the left, and everything on the right moves. Operate the two sides
-> separately and you get exactly what Baghewala gets today: higher steam-oil ratios,
-> rod floating, impact loading, pump unsetting, and energy burned per barrel. Our
-> twin computes this entire chain live, for every well, before a single rupee of
-> steam is ordered."
+🖱️ **GO TO:** Home page. **SHOW:** the full screen, don't click anything yet.
 
-**Do:** Slowly scroll the flow-chain into view. Pause on it.
-
----
-
-### SCENE 3 — Field overview + the real map (1:40–3:00) · Screen: Field Overview
-
-> **Say:** "This is the field. Twelve representative pads inside the two-hundred
-> square kilometre Baghewala production lease, in the Bikaner–Nagaur basin — and I
-> want to stress the map, because judges are rightly suspicious of AI-generated
-> visuals. These are live OpenStreetMap tiles at true GPS coordinates. Zoom in and
-> you'll see the real desert tracks around 27.58 north, 72.82 east — verifiable
-> against any atlas. Nothing is rendered.
+> 🎙️ **SAY:** "Hello judges. We are Team [your team name], and this is our product for problem statement SIH26120 from Oil India Limited.
 >
-> Above the map, the KPIs: twelve modelled pads making roughly three-sixty barrels
-> a day, which scales to the field's published record of twelve-oh-two barrels a
-> day across thirty-three producers from April twenty-twenty-six. Mean steam-oil
-> ratio inside the literature band of two-point-five to five. Mean viscosity inside
-> Oil India's assay band of ten to thirteen thousand centipoise. We calibrated to
-> published Oil India and SPE data — every source is listed on the Engineering
-> Basis page, which I'll show at the end."
-
-**Do:** Click **Field Overview** → zoom the map twice → click the **BGW-07** marker →
-click **"Open digital twin"** in its popup.
-
----
-
-### SCENE 4 — The well twin (3:00–3:55) · Screen: BGW-07 Digital Twin
-
-> **Say:** "Well BGW-07, cycle five. Thermal completion — thermal wellhead and
-> vacuum-insulated tubing — pump at one-thousand-seventy-five metres, perforations
-> at eleven-oh-four to eleven-seventeen metres, the Baghewala-1 discovery interval.
-> API fifteen-point-one, six-eighty millidarcies.
+> Let me start with the problem in one minute. In Rajasthan, there is an oil field called Baghewala. The oil there is very, very thick — like cold honey. It does not flow on its own.
 >
-> Two charts matter here. The Vogel inflow curve — what the well can deliver at
-> heated viscosity. And the viscosity–temperature curve on a log scale, anchored to
-> Oil India's lab assays. The cold-oil curve would sit eight times lower than the
-> heated one — that gap is the entire economic prize of steam, and everything from
-> here on is about buying that gap as cheaply as possible."
-
-**Do:** Linger 4 seconds on the IPR chart, then 4 seconds on the viscosity chart.
-
----
-
-### SCENE 5 — CSS optimisation (3:55–5:00) · Screen: CSS Optimization
-
-> **Say:** "Now the steam side. Drag the steam slider and three things respond:
-> heated radius from Marx and Langenheim's nineteen-fifty-nine heat balance, the
-> overburden heat-loss fraction, and soak efficiency. Every gigajoule is accounted.
+> So engineers do two things. First, they push hot steam into the ground to melt the oil. Second, they run big pumps to pull the oil up. The trouble is, these two teams work separately. The steam team decides steam by habit. The pump team changes pump speed only after something breaks. Result: wasted steam, broken pump rods, and less oil.
 >
-> Watch the steam sweep: radius grows with the square root of steam, but SOR grows
-> linearly — past roughly four-twenty-five cubic metres you're buying mostly SOR.
-> Now the soak sweep: plus twelve hours of soak buys retention for zero extra
-> steam. Soak is the cheapest barrel in thermal EOR, and the twin is the first
-> place a Baghewala engineer sees that trade numerically instead of feeling it
-> after the fuel bill arrives."
-
-**Do:** Drag steam 410 → 500 (pause) → back to 410 → drag soak +12 hr (pause on the retention readout).
+> Our product fixes exactly this. It is one smart screen where steam and pump decisions are taken together. Let me show you."
 
 ---
 
-### SCENE 6 — SRP optimisation (5:00–6:05) · Screen: SRP Optimization
+## SCENE 2 — The live field map (1:00–2:10)
 
-> **Say:** "The lift side. These surface and downhole dynamometer cards follow
-> Everitt–Jennings character — the same four signatures a field analyst reads on a
-> real card: the fluid-pound shoulder marks fillage, viscosity fattens the loop,
-> gas rounds the corner, a leaking valve tapers the stroke.
+🖱️ **GO TO:** Click **Field Overview** in the left menu.
+🖱️ **SHOW:** Zoom the map in twice with your mouse wheel. Then click the **BGW-07** green dot, and click **"Open digital twin"** in the small popup.
+
+> 🎙️ **SAY:** "This is our field view. You can see all twelve wells on a real map — not a drawing, a real map with real roads and desert tracks. You can zoom it, move it, and click any well.
 >
-> Push the SPM slider up and watch the pump-off cliff in the sweep below: past the
-> inflow limit, production plateaus, fillage slides, and the Goodman fatigue ratio
-> climbs toward the zero-point-eight endurance limit for Grade-D rods. Beside it,
-> the rod-float margin in pounds of force — when it drops under two-fifty, the rods
-> physically cannot fall faster than the fluid. That is rod float as a force
-> balance, not a warning light."
-
-**Do:** Drag SPM to 6.6 (hold 3 s on the cards) → return to 5.4 → point at Goodman + float margin readouts.
-
----
-
-### SCENE 7 — The optimiser (6:05–7:05) · Screen: Well-to-Surface Optimizer
-
-> **Say:** "This is the centrepiece. An exhaustive grid search over steam, soak and
-> pump speed — every node evaluated, ranked on operating margin in rupees per day:
-> oil revenue minus steam, power, and a risk penalty calibrated so a high-risk node
-> can never outrank a safe one on rate alone. No machine-learning black box — a
-> judge can re-derive the optimum by hand from the equation on screen.
+> On top, you see the full field numbers — how much oil the whole field makes per day, the steam-to-oil ratio, and how many warnings are active. One screen, full field, live.
 >
-> The Pareto frontier says it in one glance: up and left is better — more oil, less
-> steam — and the optimum sits at the knee, where steam cost starts outrunning
-> heated-mobility gains. The recommended window, the top-eight table, and the five
-> numbered reasons with their exact figures go straight into the morning operating
-> meeting."
+> Now I am opening one well, BGW-07, to show you what happens inside."
 
-**Do:** Hover two frontier bubbles (tooltip shows ₹/day) → scroll to "Why this optimum".
+⏸️ **PAUSE:** 3 seconds. Let the well page load fully.
 
 ---
 
-### SCENE 8 — Risk + sensors, fast (7:05–7:55) · Screen: Risk & Alerts, then Sensor Integrity
+## SCENE 3 — The digital twin of one well (2:10–3:10)
 
-> **Say:** "Two reliability pages, quickly. Risk: every alert states its threshold —
-> float margin nine hundred pounds, Goodman zero-point-eight, fillage sixty
-> percent, SOR four, water cut sixty-five — with the mechanism in engineering units
-> and a corrective action. You can disagree with a threshold; you never have to
-> guess one.
+🖱️ **GO TO:** You are on the **BGW-07 Digital Twin** page now.
+🖱️ **SHOW:** Scroll slowly from the top numbers, down to the well diagram, then to the two charts. Point at each for 3–4 seconds.
+
+> 🎙️ **SAY:** "This is the digital twin — meaning, a living copy of the real well on our screen.
 >
-> Sensors: the BGW-07 thermocouple reads eight-point-four degrees high. The twin
-> flags it, excludes the channel, falls back to model temperature plus five
-> corroborating channels — and restores confidence on recalibration."
-
-**Do:** On Sensors, click **"Simulate field recalibration"** → hold 2 s on the green 0.0 residual.
-
----
-
-### SCENE 9 — Close on the audit trail (7:55–8:40) · Screen: Engineering Basis
-
-> **Say:** "And the page that makes the rest believable: every field number carries
-> its public source — Oil India, SPE paper fifty-three-twenty-oh-three, the
-> national data repository — and every equation carries its reference:
-> Marx–Langenheim, Boberg–Lantz, Vogel, API RP-11L, IAPWS steam tables. Challenge
-> any number in this system and it traces here. That is the Baghewala digital twin:
-> real map, real correlations, real economics — thank you."
-
-**Do:** Slow scroll down both provenance tables. Hold 3 s. **Stop recording.**
+> At the top: today's truth of this well — how much oil it makes, how hot it is underground, how thick the oil is.
+>
+> Below: a simple diagram of the well — from the surface machine, down one thousand metres of pipe, to the pump, to the oil layer. Everything is labelled, so even a non-engineer can follow it.
+>
+> And these two charts are the heart of our product. The first shows how much oil this well *can* give. The second shows how heat melts the thick oil. When the rock is hot, the oil flows. When it cools, the oil becomes honey again. Our whole product is built on this one idea."
 
 ---
 
-## 3. After recording — 10-minute edit
+## SCENE 4 — Core function 1: the steam planner (3:10–4:20)
 
-- Trim silences over 1.5 s; keep all chart pauses (judges read charts slower than you think).
-- Add lower-third captions with the five key figures: **11,000 cP · 1,202 BOPD ·
-  SOR < 3 · Goodman 0.80 · 27.58°N 72.82°E**.
-- Export 1080p, H.264, ≤ 200 MB. Name it `SIH26120_Baghewala_DigitalTwin_Demo.mp4`.
-- Watch once at 1× with this checklist: every click in Section 2 executed? every
-  number spoken matches the screen? narration under 9:30 with title cards?
+🖱️ **GO TO:** Click **CSS Optimization** (left menu or the button on the page).
+🖱️ **SHOW:** Drag the **steam slider** from 410 up to 500. Wait 3 seconds while production climbs. Drag it back to 410. Then drag the **soak slider** up by 12 hours. Point at the result numbers (production up, steam bill unchanged).
 
-## 4. Likely judge questions (one-line answers)
+> 🎙️ **SAY:** "This is our first core function — the steam planner.
+>
+> Before spending lakhs of rupees on steam, the engineer tests it here. Move the steam slider, and the screen at once shows: how far the heat will reach, how much oil will come out, and the steam-to-oil ratio. Watch — more steam, clearly more oil. Steam pays.
+>
+> But steam also costs real money every day. So here is the smarter question — what if we get oil WITHOUT buying steam? I add just twelve hours of soaking time — waiting longer costs zero rupees — and production still climbs while the steam bill stays exactly flat. That free gain is the saving our product finds automatically.
+>
+> No engineer in Baghewala can see this trade today. With us, they see it *before* ordering steam."
 
-| Question | Answer |
+---
+
+## SCENE 5 — Core function 2: the pump controller (4:20–5:20) 🔴 REVISED — re-record this one
+
+🖱️ **GO TO:** Click **SRP Optimization**. Reload the page once so sliders are at default.
+🖱️ **SHOW:** Point at the two card pictures for 3 seconds (default speed). Then drag the **SPM (pump speed) slider** slowly up to 6.6 — hold 5 seconds while the loops move. Point at the dashed PPRL/MPRL lines. Drag SPM back to 5.4. Point at the green safety numbers.
+
+> 🎙️ **SAY:** "This is our second core function — the pump controller.
+>
+> These two pictures are called pump cards. They are like an ECG report for the pump — a doctor reads a heartbeat, our engineer reads pump health from these shapes.
+>
+> Watch what happens when I increase pump speed. The loops physically move — the top dashed line is the peak load climbing, and a dent grows on the left side. That dent means the pump is starving for oil. You are watching the pump get sick, live, before anything breaks in real life.
+>
+> And see — both pictures share one fixed scale, so this motion is real, not a redrawn picture. Beside them are simple safety numbers in green, yellow and red. Today Baghewala learns about a broken rod after the breakdown. With us, they see it coming on screen, in seconds."
+
+⏸️ **PAUSE:** 2 seconds on the green safety numbers.
+
+---
+
+## SCENE 6 — Core function 3: the profit finder (5:20–6:20) — ⭐ OUR WINNING FEATURE
+
+🖱️ **GO TO:** Click **Surface Optimizer**.
+🖱️ **SHOW:** Point at the recommended steam, soak and pump-speed numbers at the top. Then move to the dotted graph, hover over 2 bubbles so the money tooltip appears. Then scroll to the "Why this optimum" list.
+
+> 🎙️ **SAY:** "And now the feature that makes us win.
+>
+> This page answers the only question that matters: *what is the best setting?* Not more oil at any cost — the setting that earns the most money per day. Oil income, minus steam cost, minus power cost, minus risk. Our system checks hundreds of combinations and gives one clear answer — shown at the top in plain numbers.
+>
+> This graph proves it honestly. Each bubble is one tested combination, sized by profit — bigger bubble, more money per day. The winner sits at the top of the ranking, and below, the system explains its answer point by point, with numbers. No black box, no magic. Any judge can check our maths by hand."
+
+⏸️ **PAUSE:** 3 seconds on the graph. This is your strongest visual — let it breathe.
+
+---
+
+## SCENE 6A — Core function 5: the 30-day forecast (insert after Scene 6) 🔴 NEW — record this
+
+🖱️ **GO TO:** Click **Forecast** (left menu, inside the BGW-07 section).
+🖱️ **SHOW:** Read the 4 number boxes at the top. Click the **7D** tab — hold 2 seconds. Click the **30D** tab — hold 4 seconds while the green band opens up. Scroll to the two lower charts, point at the falling temperature line, then the falling fillage line.
+
+> 🎙️ **SAY:** "Our fifth function looks into the future.
+>
+> Pick 7 days or 30 days. The green line is the expected oil rate, and the shaded band around it is our honest uncertainty — notice how the band opens wider the further we look. We never pretend the future is exact.
+>
+> Below: the rock is cooling back toward its natural heat, the oil is thickening again, and pump fillage is slowly falling. The day the temperature line crosses the danger mark, the screen tells us to plan the next steam cycle — weeks before the well actually gets sick. That early warning is the whole point of a forecast."
+
+⏸️ **PAUSE:** 2 seconds on the 30-day band chart.
+
+---
+
+## SCENE 6B — Core function 6: the what-if lab (insert after Scene 6A) 🔴 NEW — record this
+
+🖱️ **GO TO:** Click **What-If Lab** (left menu, inside the BGW-07 section). Reload once so both sides match.
+🖱️ **SHOW:** Point at the top tag showing **Margin Δ +₹0/day** (both sides equal). Drag the **steam volume slider** up by ~50 (440 → 490). Hold 4 seconds on the green verdict box showing about **+₹78,000/day**. Click **Reset to baseline**. Then drag the **soak time slider** up by 12 hours (90 → 102). Hold 4 seconds on the green verdict box showing about **+₹14,000/day**.
+
+> 🎙️ **SAY:** "And our sixth function — the what-if lab. This is where an engineer argues with the computer.
+>
+> Left side is today. Right side is my idea. The tag on top keeps live score in rupees per day. Watch: I add more steam — production jumps from thirty-five to forty-seven barrels, and the verdict box turns green, nearly eighty thousand rupees a day more. Steam pays — but it needs a bigger steam bill, a bigger generator, more fuel.
+>
+> Reset. Now instead I only add twelve hours of soaking time — waiting longer costs nothing, zero extra steam. Read the verdict box with me: green again, fourteen thousand rupees a day more — free money. Bought gains versus free gains, settled in ten seconds, with proof the judge can read. This is exactly the kind of decision Baghewala takes by gut feeling today."
+
+⏸️ **PAUSE:** 2 seconds on the green verdict box.
+
+> ⚠️ **If your numbers differ slightly** (versions move a little): no problem — just read YOUR verdict box out loud ("earns…" with its number). The box is always honest; your narration stays true by quoting it. The pattern always holds: steam earns but costs, soak earns for free.
+
+---
+
+## SCENE 7 — Core function 4: safety alarms + sensor check (6:20–7:20)
+
+🖱️ **GO TO:** Click **Risk & Alerts**. Scroll the alert cards slowly.
+🖱️ **GO TO:** Then click **Sensor Integrity**. Click the **"Simulate field recalibration"** button. Hold 3 seconds on the green zero.
+
+> 🎙️ **SAY:** "Two more functions, quickly.
+>
+> First, safety alarms. Every warning shows its danger limit openly — no hidden scores. It tells *what* is wrong, in plain units, and *what to do* — like reduce pump speed. A judge can disagree with our limit, but nobody has to guess it.
+>
+> Second, sensor honesty. Here one temperature sensor is reading 8 degrees too high. Our system catches the lie, ignores that sensor, and uses the remaining good sensors instead. Press one button to repair it, and trust is restored. A normal dashboard would just show the wrong number. Ours protects you from it."
+
+---
+
+## SCENE 8 — Why we will win + closing (7:20–8:30)
+
+🖱️ **GO TO:** Click **Engineering Basis**. Scroll slowly down the two tables. Hold 3 seconds. **Stop recording.**
+
+> 🎙️ **SAY:** "Let me close with why this product deserves to win, in four plain points.
+>
+> One — it is real. Real map, real field numbers from Oil India and published research, real physics equations. Every number on every screen traces back to a source listed on this page. Challenge anything — it traces here.
+>
+> Two — it does the job the problem asked for. Steam planning, pump control, profit finding, forecasting, what-if testing, safety alarms — the six functions I just showed you, working together on one screen, not six separate tools.
+>
+> Three — it is honest. It shows profit, not just production. It shows danger limits openly. It admits what it is not — a calibrated model ready for live field data, not a fake claim of live data.
+>
+> Four — anyone can use it. A student can click the Guided Tour button and understand the full product in five minutes, with zero training.
+>
+> Steam plus pump, together at last. Thank you, judges."
+
+---
+
+## After recording (10 minutes)
+
+- Cut silences longer than 1.5 seconds. Keep the 3-second pauses on the map, the profit graph, and the green zero — judges read slower than you speak.
+- Add 7 text captions at the bottom at the right moments: **Real map · Steam planner · Pump ECG (live) · Profit finder · 30-day forecast · What-if lab · Honest alarms**.
+- Edit order for the final video: Scenes 1–4 → **new Scene 5** → Scene 6 → **new Scenes 6A, 6B** → Scenes 7–8.
+- Export 1080p, H.264, under 200 MB. Name it `SIH26120_Baghewala_DigitalTwin_Demo.mp4`.
+- Watch once fully: did every click listed above happen? Is every spoken number visible on screen? Total under 9:30?
+
+## If judges ask questions (simple answers, memorise these)
+
+| Question | Simple answer |
 |---|---|
-| Is this real data or synthetic? | Calibrated model: published OIL/SPE bands reproduced by construction; 12-pad layout representative; no live SCADA claimed — see Engineering Basis. |
-| Why 12 wells, not 52? | Demo compression of the 52-well pattern; totals scale linearly to the 1,202 BOPD record (shown on Field Overview). |
-| What is novel vs existing CSS software? | The coupling: one state vector (fillage) joins Marx–Langenheim heating to API RP 11L mechanics with ₹-ranked grid optimisation — thermal and lift are never optimised apart. |
-| How is rod floating detected? | Downstroke force balance: buoyed rod weight vs fluid + viscous resistance; margin in lbf, 900/250 lbf thresholds. |
-| What does SOR mean here? | Cycle SOR = cold-water-equivalent steam ÷ oil produced in the 60-day flush window; small-slug design targets < 3. |
-| Can it take live SCADA? | Yes — providers are isolated (`src/data/*`); the Sensor Integrity page already implements the drift-exclusion contract a live feed needs. |
-| Biggest limitation? | No history-matching to proprietary well files yet; productivity factor 0.42 is literature-typical, not field-matched — flagged openly on the site. |
+| Is this real data or fake? | Real public data. Field numbers come from Oil India and research papers — all listed on our last page. Well positions are sample layouts inside the real field area. No live sensor connection is claimed. |
+| Why 12 wells and not 52? | To keep the demo fast. The maths scales directly — the page itself shows how 12 wells scale to the full-field record. |
+| What is new compared to old software? | Old tools plan steam and pump separately. Ours plans them together on one screen and picks the most profitable setting, with proof. |
+| How do you catch a breaking rod? | We compute the pulling force on the rod every second. If the safety margin falls below the safe limit, the screen turns red before the real rod breaks. |
+| What is steam-oil ratio? | Steam put in divided by oil got out. Lower is better. Our target is below 3. |
+| Can it connect to real field sensors later? | Yes. The sensor page already has the full safety design — wrong sensors are caught and ignored. Connecting live data is plumbing work, not rebuilding. |
+| What is your biggest weakness? | We have not yet tuned the model on private well files — only on public data. We say this openly on the site itself. |
 
-## 5. Glossary (if a non-petroleum judge asks)
+## tiny dictionary (only if a non-oil judge asks)
 
-- **CSS** — Cyclic Steam Stimulation: inject steam → soak → produce, same well.
-- **SRP** — Sucker-Rod Pump: beam unit driving a downhole plunger via rods.
-- **SOR** — Steam-Oil Ratio: water-as-steam in ÷ oil out; lower is better.
-- **BOPD** — barrels of oil per day. **BHT** — bottomhole temperature.
-- **Vogel IPR** — curve of rate vs flowing pressure. **Goodman** — rod fatigue check.
-- **VIT** — vacuum-insulated tubing keeps steam hot on the way down.
-- **PML** — petroleum mining lease (the 200 km² block).
+- **Steam injection (CSS)** — push hot steam in, wait, then take oil out. Same well, three steps.
+- **Sucker-rod pump** — a surface machine that moves rods up and down to pull oil up, like a hand pump on a large scale.
+- **Digital twin** — a living copy of the real well on screen. Change something here, see what happens there — without touching the real well.
+- **Fillage** — how full the pump is. Full pump, happy well. Half-empty pump, trouble coming.
+- **BOPD** — barrels of oil per day. Just the daily oil count.

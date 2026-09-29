@@ -1,0 +1,938 @@
+% =====================================================================
+% BAGHEWALA WELL-TO-SURFACE DIGITAL TWIN — PROJECT REPORT + USER GUIDE
+% SIH 2026 Problem Statement SIH26120 (Oil India Limited)
+% ---------------------------------------------------------------------
+% HOW TO COMPILE (single file, no .bib needed):
+%   pdflatex Baghewala_DigitalTwin_ProjectReport.tex
+%   pdflatex Baghewala_DigitalTwin_ProjectReport.tex   (2nd run for TOC)
+% Requires a standard TeX Live / MiKTeX installation.
+% Screenshots: create a "figures/" folder next to this file and drop in the
+% PNGs listed in Appendix C; the placeholders will pick them up automatically.
+% =====================================================================
+\documentclass[12pt,a4paper]{report}
+
+% ------------------------------- packages ----------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,left=2.8cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1F6F4A}
+\definecolor{amber}{HTML}{B7792B}
+\definecolor{codebg}{HTML}{F4F4F2}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometries}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Baghewala Well-to-Surface Digital Twin — Project Report},
+  pdfauthor={Project Team (SIH26120)}}
+
+\lstdefinestyle{ts}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{amber},
+  numbers=left, numberstyle=\tiny\color{gray}, numbersep=8pt,
+  breaklines=true, breakatwhitespace=true,
+  frame=single, rulecolor=\color{gray!40},
+  showstringspaces=false, tabsize=2
+}
+\lstset{style=ts}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Baghewala Digital Twin (SIH26120)}}
+\fancyhead[R]{\small\thepage}
+\fancyfoot[C]{\small\textit{Project Report + Explanatory Guide}}
+\renewcommand{\headrulewidth}{0.6pt}
+
+\setlist[itemize]{leftmargin=*,itemsep=3pt}
+\setlist[enumerate]{leftmargin=*,itemsep=3pt}
+
+% ============================== document =============================
+\begin{document}
+
+% ------------------------------ title page ---------------------------
+\begin{titlepage}
+\centering
+{\large\bfseries SMART INDIA HACKATHON 2026\par}
+\vspace{4pt}
+{\normalsize Problem Statement SIH26120 \textbar{} Oil India Limited\par}
+\vspace{14pt}
+\rule{\textwidth}{1.2pt}\par\vspace{10pt}
+{\Huge\bfseries Digital Twin for Well-to-Surface\\[4pt]
+Optimization of Cyclic Steam Stimulation\\[4pt]
+(CSS) and Sucker Rod Pump (SRP)\\[4pt]
+Operations for Heavy Oil Wells\\[4pt]
+of Baghewala Field\par}
+\vspace{10pt}
+\rule{\textwidth}{1.2pt}\par
+\vspace{14pt}
+{\Large Project Report \textbar{} Explanatory Guide \textbar{} User Manual\par}
+\vspace{22pt}
+\begin{tabular}{rl}
+\textit{Field:} & Baghewala PML, Bikaner--Nagaur Basin, Rajasthan \\
+\textit{Reservoir:} & Jodhpur Sandstone (\textasciitilde1,110\,m, 14--19$^\circ$API heavy oil) \\
+\textit{Stack:} & React 18 + TypeScript + Vite + Leaflet/OSM + Recharts \\
+\textit{Deployment:} & Render Web Service (Node) serving the production bundle \\
+\end{tabular}
+\vspace{24pt}
+
+\begin{center}
+\begin{tabular}{p{5.5cm}p{7.5cm}}
+\toprule
+\textbf{Role} & \textbf{Name} \\
+\midrule
+Team Leader & \rule{6.5cm}{0.4pt} \\
+Member 2 & \rule{6.5cm}{0.4pt} \\
+Member 3 & \rule{6.5cm}{0.4pt} \\
+Member 4 & \rule{6.5cm}{0.4pt} \\
+Member 5 & \rule{6.5cm}{0.4pt} \\
+Member 6 & \rule{6.5cm}{0.4pt} \\
+Faculty Mentor & \rule{6.5cm}{0.4pt} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{18pt}
+{\large Institution: \rule{8cm}{0.4pt}\par}
+\vspace{6pt}
+{\large September 2026\par}
+\end{titlepage}
+
+% ---------------------------- certificate ----------------------------
+\chapter*{Certificate}
+\addcontentsline{toc}{chapter}{Certificate}
+This is to certify that the project titled \textbf{``Digital Twin for
+Well-to-Surface Optimization of Cyclic Steam Stimulation (CSS) and Sucker Rod
+Pump (SRP) Operations for Heavy Oil Wells of Baghewala Field''} is a bonafide
+record of work carried out by the team listed on the title page, in partial
+fulfilment of the requirements of Smart India Hackathon 2026, Problem Statement
+SIH26120 floated by Oil India Limited. The work is original, and all sources of
+field data and engineering correlations used herein have been duly cited.
+
+\vspace{30pt}
+\begin{tabular}{p{7cm}p{7cm}}
+\rule{5.5cm}{0.4pt} & \rule{5.5cm}{0.4pt} \\
+Faculty Mentor (Signature) & Head of Department (Signature) \\
+ & \\
+\rule{5.5cm}{0.4pt} & \rule{5.5cm}{0.4pt} \\
+External Examiner & Date / Seal \\
+\end{tabular}
+
+% ---------------------------- declaration ----------------------------
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+We declare that (i) this report is our own work except where acknowledged;
+(ii) field figures (depths, API gravities, viscosities, well counts, production
+records) are taken from the published sources cited in Chapter~3 and reproduced
+only as calibration anchors; (iii) every computed quantity in the software
+(rate, SOR, temperature, viscosity, fillage, load, margin) is \emph{solved} from
+the coupled engineering chain of Chapter~4 --- no production number is invented
+by a random generator; and (iv) the well layout is a representative 12-pad grid
+inside the real Baghewala PML and is explicitly labelled as such wherever shown.
+
+\vspace{24pt}
+\begin{tabular}{ll}
+Date: \rule{4cm}{0.4pt} & Place: \rule{5cm}{0.4pt} \\
+\end{tabular}
+\vspace{12pt}
+
+\noindent Signatures of team members:\quad
+\rule{3cm}{0.4pt}\quad \rule{3cm}{0.4pt}\quad \rule{3cm}{0.4pt}\quad
+\rule{3cm}{0.4pt}\quad \rule{3cm}{0.4pt}\quad \rule{3cm}{0.4pt}
+
+% --------------------------- acknowledgement -------------------------
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+We thank Oil India Limited for floating a problem statement grounded in a real
+operating field; the authors of the SPE, AIME and API publications whose
+correlations power our model; and the OpenStreetMap contributors whose open map
+data lets our field view show real geography instead of rendered backdrops.
+
+% ------------------------------ abstract ----------------------------
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+Baghewala field (Rajasthan) produces 14--19$^\circ$API heavy oil
+(8\,000--15\,000\,cP at 50$^\circ$C) from the Jodhpur Sandstone at
+\textasciitilde1,110\,m, virgin temperature 46--48$^\circ$C and low reservoir
+pressure. Recovery needs Cyclic Steam Stimulation (CSS) plus sucker-rod pumping
+(SRP), but the two are today optimised separately: steam slugs from historical
+practice, pump speed adjusted reactively. As the rock cools, viscosity climbs,
+pump fillage collapses, rods float and fail, and steam-oil ratio (SOR) rises.
+
+We built an AI-enabled, well-to-surface digital twin as a web application that
+\emph{couples} both halves in one deterministic chain:
+\begin{center}
+CSS slug $\rightarrow$ Marx--Langenheim heated radius $\rightarrow$ soak
+retention $\rightarrow$ $\mu(T)$ $\rightarrow$ Vogel IPR inflow
+$\rightarrow$ API RP\,11L displacement $\rightarrow$ fillage
+$\rightarrow$ rod loads $\rightarrow$ Goodman fatigue + rod-float margin
+$\rightarrow$ SOR / INR operating margin.
+\end{center}
+A grid optimiser over steam $\times$ soak $\times$ SPM ranks every operating
+node on rupees per day (oil revenue minus steam, power and a risk penalty) and
+presents the Pareto knee as the recommended window. Twelve representative pads
+with true WGS84 coordinates sit on live OpenStreetMap tiles; per-well rates
+(15--45\,BOPD) scale to the published 1,202\,BOPD field record (Apr-2026).
+A 15-stop in-app guided tour narrates the system for evaluators, and an
+Engineering Basis page traces every number to its public source or equation.
+
+\textbf{Keywords:} digital twin, CSS, sucker-rod pump, heavy oil, Baghewala,
+Vogel IPR, API RP\,11L, Marx--Langenheim, SOR, OpenStreetMap.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+% =====================================================================
+\chapter{Introduction}
+% =====================================================================
+\section{India's heavy-oil challenge}
+Conventional light-oil reservoirs dominate Indian production, but heavy-oil
+accumulations such as Baghewala represent a large, hard-to-produce resource.
+Heavy oil is defined here pragmatically: dead-oil viscosity in the thousands of
+centipoise at surface conditions, API gravity below about 20$^\circ$, and
+negligible natural flow energy. Primary recovery is poor; sustained production
+demands \emph{thermal} enhanced oil recovery together with \emph{artificial
+lift} --- and, crucially, the two must be managed as one system.
+
+\section{The Baghewala field}
+Baghewala lies in the Bikaner--Nagaur sub-basin of the Rajasthan Basin
+(Baghewala Petroleum Mining Lease, 200.26\,km$^2$). Oil India Limited's
+Baghewala-1 (1991) discovered heavy oil in the Neoproterozoic--Cambrian Jodhpur
+Sandstone at 1,104--1,117\,m (average pay depth \textasciitilde1,150\,m).
+Key published facts used throughout this project:
+\begin{itemize}
+  \item Fluid: 17--19$^\circ$API per SIH26120; laboratory assays 14--17$^\circ$API
+    (SPE APOG 2023, Paper 535203); viscosity 10\,000--13\,000\,cP at 50$^\circ$C
+    (OIL) / 8\,000--15\,000\,cP (SPE); sulphur-rich ($>$1\,\%S), high asphaltene.
+  \item Reservoir: virgin temperature 46--48$^\circ$C, low pressure, poor primary
+    mobility; net pay \textasciitilde14\,m, porosity \textasciitilde19\,\%,
+    permeability 300--1\,500\,mD.
+  \item Development: first CSS pilot 2006, commercial production since 2017;
+    35 wells drilled / 23 producing (base case) growing to 52 wells / 33
+    producing with a record 1,202\,BOPD in April 2026; CSS active in 19 wells
+    (+72\,\% year-on-year); thermal completions (thermal wellhead +
+    vacuum-insulated tubing, VIT); conventional + hydraulic SRP units.
+\end{itemize}
+
+\section{Cyclic Steam Stimulation in brief}
+A CSS cycle has three phases: (1) \textbf{injection} --- saturated steam
+(typically 24--40\,bar, \textasciitilde280--340$^\circ$C) is pumped for days to
+weeks (slug 300--550\,m$^3$ cold-water equivalent, CWE); (2) \textbf{soak} ---
+the well is shut in (48--120\,hr) so heat conducts outward; (3)
+\textbf{production} --- viscosity near the wellbore has collapsed by two orders
+of magnitude and oil flows to the pump. The economic yardstick is the
+steam--oil ratio, SOR $=$ (CWE steam in) / (oil out); literature band 2.5--5,
+with small-slug designs targeting below 3.
+
+\section{Sucker-rod pumping in brief}
+A surface beam unit reciprocates a rod string driving a downhole plunger pump
+(here 1.75-in.\ plunger at 1,075\,m, 7/8-in.\ API Grade-D rods, 2$\tfrac78$-in.\
+tubing, 22\,kW motors via VFD). Operating point: strokes per minute
+(3.0--6.5\,SPM), stroke length (64--86\,in), VFD frequency (35--55\,Hz). Pump
+displacement follows API RP\,11L:
+\begin{equation}
+PD = 0.1166\, D^{2}\, S_{p}\, N \quad \text{[BPD; $D,S_{p}$ in inches, $N$ in SPM]}.
+\label{eq:pd}
+\end{equation}
+In heavy oil the rods can \emph{float}: on the downstroke, viscous drag plus
+fluid load can exceed the buoyed rod weight, so rods fall slowly and then slam
+(impact loading), unsettling pumps and parting rods.
+
+\section{Why separate optimisation fails}
+The coupling chain (Figure~\ref{fig:chain}) shows the trap: raising SPM without
+re-heating the near-wellbore merely churns the same viscous fluid harder ---
+fillage falls, rod-float margin collapses, Goodman fatigue ratio climbs, and SOR
+barely moves. Thermal and lift decisions share one state vector (pump fillage);
+optimising them apart guarantees steam waste on one side and iron breakage on
+the other.
+
+\section{The digital-twin concept}
+A digital twin is a live, quantitative mirror of a physical asset: field state
+in, prediction and optimisation out, with every recommendation traceable to
+physics or data. Our twin mirrors each well from reservoir to sales point
+(``well-to-surface''), recomputing the full chain whenever any control moves.
+
+\section{Organisation of this report}
+Chapter~2 states the problem and objectives; Chapter~3 documents field data and
+calibration; Chapter~4 derives the engineering models; Chapter~5 presents
+system architecture; Chapter~6 the implementation; Chapter~7 is the explanatory
+user guide; Chapter~8 deployment; Chapter~9 results and validation;
+Chapter~10 limitations and future work; followed by references and appendices
+(judge Q\&A, glossary, screenshot guide).
+
+% =====================================================================
+\chapter{Problem Statement and Objectives}
+% =====================================================================
+\section{SIH26120 as floated}
+SIH 2026 Problem Statement SIH26120 (Oil India Limited), titled as on our
+cover, observes that Baghewala's CSS cycle design and SRP operation are
+optimised separately from historical experience; that post-steam cooling raises
+viscosity, cutting pump efficiency and causing rod floating, impact loading,
+pump unsetting and rod failures; and it asks for an AI-enabled well-to-surface
+digital twin giving real-time monitoring, prediction and optimisation.
+
+\section{Operating challenges addressed}
+\begin{enumerate}
+  \item CSS parameters (steam volume, injection pressure, soak time,
+    production cut-off) set from historical practice, not optimisation.
+  \item SRP parameters (stroke length, SPM, VFD) adjusted manually and
+    reactively.
+  \item Heavy crude causes rod floating, impact loading, pump unsetting, rod
+    failures and heavy maintenance.
+  \item Reservoir, wellbore and lift performance are never optimised together.
+  \item No predictive analytics: high SOR, high energy per barrel, low recovery.
+\end{enumerate}
+
+\section{Objectives}
+\begin{enumerate}
+  \item Optimise CSS cycle parameters per well and per cycle.
+  \item Predict heating, cooling and production trajectories.
+  \item Continuously recommend SRP operating points (SPM, stroke, VFD) from
+    live well state.
+  \item Detect rod floating and minimise impact loading with force-based
+    criteria.
+  \item Improve pump efficiency and equipment reliability.
+  \item Minimise steam and energy per barrel (operating margin in INR/day).
+\end{enumerate}
+
+\section{Expected benefits}
+Higher recovery; lower SOR; lower energy per barrel; fewer rod failures and
+unset pumps; longer equipment life; and, above all, predictive, data-driven
+decisions an operations engineer can audit.
+
+\section{Scope and assumptions}
+The twin models 12 representative pads inside the real PML (the 52-well pattern
+compressed for demonstration; totals scale linearly). It is calibrated to
+\emph{published} data, not live SCADA --- the Sensor Integrity page
+demonstrates the drift detect $\rightarrow$ exclude $\rightarrow$ recalibrate
+architecture a live feed would use. Economic constants: oil USD\,78/bbl at
+INR\,83.5, steam INR\,1\,450/m$^3$ CWE, power INR\,8.5/kWh.
+
+% =====================================================================
+\chapter{Field Data and Calibration}
+% =====================================================================
+\section{Published sources}
+Every field number in the twin is traceable to Table~\ref{tab:sources}. Where
+sources give ranges, the code stores the range \emph{and} the single
+calibration value (see \texttt{src/engineering/fieldConstants.ts}), so any
+evaluator can audit each assumption.
+
+\begin{longtable}{p{3.2cm}p{6.2cm}p{5.2cm}}
+\caption{Field-data provenance.\label{tab:sources}} \\ \toprule
+\textbf{Claim used} & \textbf{Public source} & \textbf{Use in twin} \\ \midrule
+\endfirsthead
+\toprule \textbf{Claim used} & \textbf{Public source} & \textbf{Use in twin} \\ \midrule
+\endhead
+PML 200--200.26\,km$^2$; 35/23 then 52--56/33--34 wells & Oil India Ltd,
+Rajasthan Fields page & Block size, well counts, status \\[2pt]
+Pay \textasciitilde1,150\,m; 10--13k\,cP @50$^\circ$C; VIT + SRP; $>$600\,BOPD &
+OIL Rajasthan Fields & Depth, $\mu$ anchor, completion, base rate \\[2pt]
+API 14--17; 8--15k\,cP; pay \textasciitilde1,100\,m &
+Singh et al., SPE APOG 2023 (535203) & PVT band, depth cross-check \\[2pt]
+Bilara + Jodhpur heavy oil; Bikaner--Nagaur &
+DGH National Data Repository & Stratigraphy, basin setting \\[2pt]
+Baghewala-1 (1991), 17.6$^\circ$API @1,104--1,117\,m &
+Bhat et al.\ via Springer J.\ Petrol.\ Expl.\ Prod.\ Technol.\ 2021 &
+Discovery interval, perfs \\[2pt]
+1,202\,BOPD record; CSS in 19 wells (+72\,\%) &
+Times of India / News18 / ET Energy, Apr-2026 & Field-total calibration \\[2pt]
+17--19$^\circ$API; $T_{res}$ 46--48$^\circ$C; scope &
+SIH26120 problem statement & Framing, virgin $T$, scope \\
+\bottomrule
+\end{longtable}
+
+\section{Model constants}
+Table~\ref{tab:constants} summarises the working constants. Per-well API spans
+14--19 (the union of SIH and SPE figures); pressure spans 70--95\,bar;
+permeability spans 300--1\,500\,mD.
+
+\begin{table}[h]
+\centering
+\caption{Working constants (representative calibration values).\label{tab:constants}}
+\begin{tabular}{lll}
+\toprule
+\textbf{Quantity} & \textbf{Value} & \textbf{Remarks} \\ \midrule
+Pay depth / perfs & 1,110\,m / 1,104--1,117\,m & Discovery interval \\
+Virgin $T$ / $P$ & 47$^\circ$C / 82\,bar & Ranges 46--48$^\circ$C, 70--95\,bar \\
+Net pay / $\phi$ / $k$ & 14\,m / 0.19 / 850\,mD & Fluvio-deltaic Jodhpur sand \\
+$\mu_{50}$ anchor & 11,000\,cP @50$^\circ$C & Band 8,000--15,000\,cP \\
+Steam slug / soak & 400\,m$^3$ CWE / 72\,hr & Ranges 300--550, 48--120 \\
+Injection $P$ / quality & 24--40\,bar / 0.8 & Saturated steam \\
+Pump / rods & 1.75-in.\ @1,075\,m; Grade-D 7/8-in. & VIT completion \\
+SPM / stroke / VFD & 3.0--6.5 / 64--86\,in / 35--55\,Hz & 22\,kW motors \\
+SOR target & $<3$ (band 2.5--5) & Small-slug design \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Calibration checkpoints}
+The model must reproduce, without fitting: (i) $\mu$ inside 8--15k\,cP at
+50$^\circ$C for every API; (ii) 15--45\,BOPD per well, scaling to
+\textasciitilde1,202\,BOPD over 33 producers; (iii) cycle SOR in 1--4;
+(iv) map pads at true coordinates on real tiles. Chapter~9 verifies each.
+
+% =====================================================================
+\chapter{Engineering Models (Theory)}
+% =====================================================================
+This chapter derives, one by one, the correlations implemented in
+\texttt{src/engineering/correlations.ts}. Numbered equations match code
+comments so an evaluator can walk from formula to function.
+
+\section{Dead-oil viscosity versus temperature}
+Heavy-oil viscosity follows an Arrhenius-type collapse (Mehrotra--Svrcek
+double-log form, used here in exponential form calibrated to OIL assays):
+\begin{equation}
+\mu(T)=\mu_{50}\,\exp[-b\,(T-50)], \qquad
+b = 0.068 - 0.0016\,(\mathrm{API}-14)\;\;[/^\circ\mathrm{C}],
+\label{eq:mu}
+\end{equation}
+with the 50$^\circ$C anchor mapped linearly across the assay band,
+\begin{equation}
+\mu_{50} = 8000 + \frac{19-\mathrm{API}}{19-14}\times7000
+\quad\text{[cP; API\,19 $\rightarrow$ 8k, API\,14 $\rightarrow$ 15k]}.
+\label{eq:mu50}
+\end{equation}
+Checks: $\mu(47^\circ\mathrm{C})\approx1.23\,\mu_{50}\approx13{,}500$\,cP;
+$\mu(150^\circ\mathrm{C})\approx12$\,cP --- the two-order collapse that makes
+CSS work --- and roughly $10\times$ per 35$^\circ$C, the heavy-oil rule of
+thumb. The inverse $T(\mu)=50-\ln(\mu/\mu_{50})/b$ sizes re-steam triggers.
+
+\section{Saturated-steam tables}
+Injection pressure maps to steam temperature through an Antoine-form fit of the
+IAPWS-IF97 saturation line (15--60\,bar, $\pm1.5^\circ$C), letting anyone
+cross-check $P\rightarrow T$ without steam tables:
+\begin{equation}
+T_{sat}=\frac{3816.44}{11.6703-\ln p}-(-46.13)-273.15,
+\qquad p\ \mathrm{in\ kPa},
+\label{eq:tsat}
+\end{equation}
+e.g.\ \textasciitilde224$^\circ$C at 25\,bar. Dry-steam enthalpy is linearised
+as $h_s \approx 2796-0.62\,(P-30)$\,kJ/kg over 20--40\,bar; feedwater enthalpy
+$h_w=4.19\,T_r$.
+
+\section{Marx--Langenheim heated zone}
+For a radial steam soak (Marx \& Langenheim, Trans.\ AIME 216, 1959), injected
+heat $Q_{inj}=V_s\rho\,(h_s-h_w)$ splits into rock heating and overburden loss:
+\begin{equation}
+Q_{inj}=\frac{M\,h\,A_r\,(T_s-T_r)}{G(t_D)}+Q_{loss},\qquad
+t_D=\frac{4\,k_{ob}\,t}{M\,h^{2}},
+\label{eq:ml}
+\end{equation}
+with $M\approx2.35$\,MJ/m$^3\!\cdot\!$K (Jodhpur sand), $h=14$\,m,
+$k_{ob}\approx2.0$\,W/m$\cdot$K, $\alpha\approx0.8\times10^{-6}$\,m$^2$/s, and
+$G(t_D)$ the Marx--Langenheim conduction function (Pad\'e-style approximation
+in code). Heated radius $r_h=\sqrt{A_r/\pi}$ (clamped to the physical
+700--26\,000\,m$^2$ area window) and heat-loss fraction 0.15--0.55 are reported
+per slug --- the CSS page's ``heat audit''.
+
+\section{Soak retention (Boberg--Lantz character)}
+After injection stops, conduction spreads heat while the near-wellbore cools
+(Boberg \& Lantz, JPT 1966, SPE\,1578-PA). Soak efficiency --- the fraction of
+useful heat retained in the drainage radius --- is modelled as
+\begin{equation}
+\eta_{soak}\approx0.97-\mathrm{loss}(t_{soak},r_h),\qquad
+T_{hz}=T_r+(T_s-T_r)\times0.52\,\eta_{soak}\times\mathrm{intensity},
+\label{eq:soak}
+\end{equation}
+where intensity scales with slug size relative to 420\,m$^3$. Longer soak
+raises retention with \emph{zero} extra steam: the cheapest barrel in the
+system, and the reason the optimiser often prefers $+12$\,hr of soak over
+$+25$\,m$^3$ of steam.
+
+\section{Vogel inflow with heated mobility}
+Single-phase radial productivity scaled by heated mobility $k/\mu(T)$:
+\begin{equation}
+J=\frac{0.00708\,k\,h\,F_p}{\mu\,B\,\ln(r_e/r_w)}
+\quad\text{[bbl/d/psi]},
+\label{eq:j}
+\end{equation}
+with $F_p=0.42$ (relative permeability to heavy oil $\times$ skin / partial
+penetration), history-matched so Vogel reproduces 15--45\,BOPD/well.
+Below $0.6\,p_r$ the Vogel (1968) correction applies:
+\begin{equation}
+q=q_b+(q_{max}-q_b)\Bigl[1-0.2\frac{p_{wf}}{p_r}
+-0.8\Bigl(\frac{p_{wf}}{p_r}\Bigr)^{2}\Bigr],
+\label{eq:vogel}
+\end{equation}
+else $q=J(p_r-p_{wf})$. Flowing pressure follows pump submergence via
+$p_{wf}=p_r(1-d)$, $d=0.42+(100-F\%)/220$ clamped to $[0.3,0.72]$.
+
+\section{API RP\,11L rod-pump mechanics}
+Displacement is Eq.~\ref{eq:pd}. Peak/minimum polished-rod loads combine buoyed
+rod weight, fluid load $F_o=0.433\,\gamma D^{2}H\times0.785$, Tak\'acs-type
+viscous drag $F_{drag}\propto\mu^{0.35}S_pN$, and a speed-squared dynamic term.
+Polished-rod power is computed from first principles --- hydraulic lift
+$\rho gQH$ at 55\,\% efficiency plus rod-friction work plus 0.5\,kW drive
+losses (a 100\,BPD lift from 1,075\,m is \textasciitilde6\,kW shaft: checkable
+by hand).
+
+\section{The nodal coupling: fillage}
+The twin's single coupling variable is pump fillage,
+\begin{equation}
+f=\frac{q_{liq}}{PD},\qquad
+q_{liq}=\frac{q_{oil}}{1-WC}\;\; \mathrm{clamped\ to\ }[0.18,0.98],
+\label{eq:fillage}
+\end{equation}
+solved by 3-pass fixed-point iteration with the drawdown relation
+(fillage $\rightarrow$ $p_{wf}$ $\rightarrow$ inflow $\rightarrow$ fillage).
+Lifted oil $=PD\times\eta_{vol}\times(1-0.12\,WC)$, capped at 60\,BOPD.
+
+\section{Goodman fatigue check}
+With $S_e=35$\,ksi, $S_y=115$\,ksi for Grade-D steel and a 2.2 coupling
+stress-concentration factor (API RP\,11BR --- pins, not bodies, fail):
+\begin{equation}
+\frac{\sigma_a}{S_e}+\frac{\sigma_m}{S_y}\;\le\;0.80,
+\label{eq:goodman}
+\end{equation}
+where $\sigma_a$ carries the SCF. Operating bands: $<0.55$ normal,
+$0.55$--$0.80$ watch, $\ge0.80$ endurance exceedance.
+
+\section{Rod-float criterion}
+Rods float when net downstroke force vanishes: buoyed rod weight versus fluid
+plus viscous resistance. Margin in lbf; healthy $>900$, floating $<250$.
+Risk score $=100\,[1-\mathrm{margin}/4500]$ clamped to 2--98. Impact-loading
+risk blends SPM overspeed, Goodman exceedance and $(1-f)$ starvation.
+
+\section{Dynamometer cards}
+The 97-point surface card synthesises Everitt--Jennings (SPE\,18189)
+character: fluid-pound shoulder position encodes fillage ($<$\,\textasciitilde92\,\%
+shows a shoulder), viscous hysteresis fattens the loop with $\log\mu$, gas
+rounds the compression corner, travelling-valve leak tapers the downstroke.
+The pump card follows by static load transfer (surface minus buoyed rod
+weight, $\times0.92$).
+
+\section{Decline, cooling and economics}
+Forecasts use Arps exponential decline $q(t)=q_0e^{-Dt}$ with Ramey-type
+cooling $T(t)=T_v+(T_0-T_v)e^{-t/\tau}$ ($\tau\approx55$\,d for VIT at
+1,100\,m) and P10--P90 bands of $\pm(5\%+0.5\%/\mathrm{day})$.
+Cycle SOR $=$ CWE steam / oil in the 60-day flush window. The optimiser ranks
+grid nodes on
+\begin{equation}
+\text{margin}=q\,p_{oil}-\frac{V_s c_s}{120}-P\,24\,c_e
+-(R_{float}+R_{impact})\times55\quad\text{[INR/day]},
+\label{eq:margin}
+\end{equation}
+with steam amortised per producing day so slugs and rates compare fairly.
+
+% =====================================================================
+\chapter{System Architecture and Design}
+% =====================================================================
+\section{Coupled data flow}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.15cm,
+  box/.style={rectangle,draw=accent!80!black,thick,rounded corners=3pt,
+    minimum width=2.6cm,minimum height=0.85cm,align=center,font=\small},
+  arr/.style={-{Stealth[length=2.5mm]},thick,accent!80!black}]
+  \node[box] (css) {CSS slug\\$V_s,P_{inj},t_{soak}$};
+  \node[box,right=of css] (ml) {Marx--Langenheim\\$r_h,Q,GJ$};
+  \node[box,right=of ml] (mu) {$\mu(T)$\\Arrhenius};
+  \node[box,right=of mu] (ipr) {Vogel IPR\\$q_{oil}$};
+  \node[box,below=of ipr] (fill) {Fillage\\$f=q_{liq}/PD$};
+  \node[box,left=of fill] (srp) {API RP\,11L\\$PD,PPRL$};
+  \node[box,left=of srp] (mech) {Goodman\\+ float margin};
+  \node[box,left=of mech] (econ) {SOR / INR\\margin};
+  \draw[arr] (css)--(ml); \draw[arr] (ml)--(mu); \draw[arr] (mu)--(ipr);
+  \draw[arr] (ipr)--(fill);
+  \node[box,above=of srp] (sp) {SRP point\\$SPM,S_p,VFD$};
+  \draw[arr] (sp)--(srp); \draw[arr] (srp)--(fill);
+  \draw[arr] (fill)--(mech); \draw[arr] (mech)--(econ);
+\end{tikzpicture}
+\caption{One-directional coupled solve: no circularity; SRP and CSS meet only
+at fillage. Implemented by \texttt{solveCoupledChain()}.\label{fig:chain}}
+\end{figure}
+
+\section{Module map}
+\begin{table}[h]
+\centering
+\caption{Repository modules (matching \texttt{src/}).\label{tab:modules}}
+\begin{tabular}{lp{9.5cm}}
+\toprule
+\textbf{Module} & \textbf{Responsibility} \\ \midrule
+\texttt{engineering/} & Sourced constants + correlations (audit trail) \\
+\texttt{simulation/} & Coupled solver + INR grid optimiser \\
+\texttt{data/} & 12-pad WGS84 inventory, forecast/alert/sensor providers \\
+\texttt{components/} & Shared UI + live OSM \texttt{FieldMap} + tour overlay \\
+\texttt{pages/} & 11 routed views (Table~\ref{tab:pages}) \\
+\texttt{tour/} & 15-step judge walkthrough engine \\
+\texttt{types/, utils/} & Domain types, deterministic RNG helpers \\
+\texttt{styles/} & Operations-console dark theme \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Technology stack}
+\begin{table}[h]
+\centering
+\caption{Stack and why each piece was chosen.\label{tab:stack}}
+\begin{tabular}{llp{7cm}}
+\toprule
+\textbf{Layer} & \textbf{Choice} & \textbf{Rationale} \\ \midrule
+UI & React 18 + TypeScript & Typed domain model; component reuse \\
+Build & Vite 5 (\texttt{tsc -b \&\& vite build}) & Fast, static-bundle output \\
+Map & Leaflet 1.9 + react-leaflet 4.2, OSM tiles & Open-source true geography (ODbL) \\
+Charts & Recharts 2.12 & IPR, sweeps, cards, Pareto, forecasts \\
+Routing & react-router-dom 6 & Deep-linkable wells (\texttt{/well/BGW-07/css}) \\
+Hosting & Render Web Service (Node) & Serves \texttt{dist/} via \texttt{vite preview} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Coupling algorithm}
+\texttt{solveCoupledChain(plan, point, $T_r,p_r$, API, WC, $k$)}:
+(1) Marx--Langenheim $\rightarrow$ $r_h$, GJ, loss; (2) soak efficiency
+$\rightarrow$ heated-zone $T$; (3) $\mu(T)$; (4) 3-pass nodal loop
+(fillage $\rightarrow$ drawdown $\rightarrow$ Vogel inflow $\rightarrow$
+RP\,11L displacement $\rightarrow$ fillage); (5) lifted rate, PRHP, Goodman,
+float margin/risks; (6) SOR, cycle oil, steam MWh. Legacy wrappers
+(\texttt{predictCssPlan}, \texttt{predictSrpPoint}) keep page code stable.
+
+% =====================================================================
+\chapter{Implementation}
+% =====================================================================
+\section{Engineering layer (the audit trail)}
+\texttt{fieldConstants.ts} stores FIELD / RESERVOIR / FLUID / CSS / SRP /
+PRODUCTION\_BENCHMARKS plus IAPWS fits. \texttt{correlations.ts} implements
+Eqs.~\ref{eq:mu}--\ref{eq:margin} with reference tags
+\texttt{[ML-1959]}, \texttt{[BL-1966]}, \texttt{[Vogel-68]},
+\texttt{[API-11L]}, \texttt{[API-11E]}, \texttt{[EJ-1992]},
+\texttt{[Mehrotra]}, \texttt{[Arps-45]}. Example:
+\begin{lstlisting}[language=C]
+// Per-well anchor: API 19 -> 8000 cP, API 14 -> 15000 cP
+export function mu50ForApi(apiGravity: number): number {
+  const [lo, hi] = FLUID.mu50RangeCp;
+  const t = clamp((19 - apiGravity) / (19 - 14), 0, 1);
+  return lo + t * (hi - lo);
+}
+export function viscosityCpAtTemp(tempC, apiGravity): number {
+  const mu50 = mu50ForApi(apiGravity);
+  const b = 0.068 - 0.0016 * (apiGravity - 14);
+  return clamp(mu50 * Math.exp(-b * (tempC - 50)), 8, 22000);
+}
+\end{lstlisting}
+
+\section{Simulation layer}
+\texttt{physics.ts} exposes the coupled solver, the CSS/SRP predictors, and
+\texttt{optimizeWell()}, which enumerates steam $\times$ soak $\times$ SPM
+nodes and returns the best-margin node plus the ranked frontier for the Pareto
+chart and top-8 table.
+
+\section{Data providers}
+\texttt{wellProvider.ts} builds the 12 deterministic pads (centre
+27.58$^\circ$N, 72.82$^\circ$E; \textasciitilde5$\times$3\,km surveyed-style
+grid; BGW-07: cycle 5, API 15.1, 680\,mD) by running each pad's slug and pump
+point through the solver --- so inventory numbers are \emph{outputs}, not
+inputs. Forecast, alert (thresholds: float 900\,lbf, Goodman 0.80, fillage
+60\,\%, SOR 4.0, water cut 65\,\%) and sensor (6 channels $\times$ 12 pads;
+scripted BGW-07 thermocouple drift $+8.4^\circ$C, residual gate $\pm1.5^\circ$C)
+providers follow the same pattern.
+
+\section{Views}
+\begin{table}[h]
+\centering
+\caption{Routed pages and their purpose.\label{tab:pages}}
+\begin{tabular}{lp{9.8cm}}
+\toprule
+\textbf{Route} & \textbf{Purpose} \\ \midrule
+\texttt{/} Mission Brief & Hook, coupling chain, calibration badges, demo paths \\
+\texttt{/field} & Live OSM map, KPIs scaled to 1,202\,BOPD, 14-day trend, pad cards \\
+\texttt{/well/:id} & Schematic, state vector, IPR + $\mu(T)$ charts, heat audit \\
+\texttt{/well/:id/css} & Slug sliders, heat audit, steam/soak sweep charts \\
+\texttt{/well/:id/srp} & SPM/stroke/VFD sliders, surface + pump cards, SPM cliff sweep \\
+\texttt{/well/:id/optimizer} & Recommended window, Pareto frontier, top-8, ``why'' panel \\
+\texttt{/well/:id/forecast} & 7/14/30-day P10--P90 rate, BHT/$\mu$, fillage/water-cut \\
+\texttt{/well/:id/scenarios} & Baseline-vs-scenario lab with live margin $\Delta$ \\
+\texttt{/risk} & Threshold table + ranked mechanism/action alert cards \\
+\texttt{/sensors} & SCADA channel map, drift detect $\rightarrow$ exclude $\rightarrow$ recalibrate \\
+\texttt{/references} & Field + model provenance tables (the audit page) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Guided-tour subsystem}
+\texttt{tour/steps.ts} (15 stops: route + \texttt{data-tour} target + narration
++ optional hint), \texttt{tour/TourContext.tsx} (active step, autoplay
+\textasciitilde14\,s, arrow-key/Esc handling, auto-navigation), and
+\texttt{components/TourOverlay.tsx} (pointer-transparent dim layer, amber
+spotlight ring measured from the target's bounding box, narration card with
+progress dots). Entry points: sidebar, topbar and hero ``Guided Tour'' buttons.
+
+% =====================================================================
+\chapter{Explanatory User Guide}
+% =====================================================================
+\section{Setup}
+Prerequisites: Node.js 18+ and npm. Internet access is required only for OSM
+map tiles; all computation is local.
+\begin{lstlisting}
+npm install
+npm run dev        # open the printed URL, typically http://localhost:5173
+npm run build      # type-checks (tsc -b) and emits dist/
+npm run preview    # serves dist/ locally
+npm start          # production serve: vite preview --host 0.0.0.0 --port ${PORT:-4173}
+\end{lstlisting}
+
+\section{Page-by-page walkthrough}
+\paragraph{Mission Brief (/).} Read the hook, then the coupling chain, then the
+calibration badges. Press \textbf{Guided Tour} here for the narrated version.
+
+\paragraph{Field Overview (/field).} The map proves geography: zoom to
+Baghewala and compare with any atlas. KPIs show the 12-pad total beside the
+$\times33$-well scaling to the 1,202\,BOPD record. Click BGW-07's marker
+$\rightarrow$ popup $\rightarrow$ twin.
+
+\paragraph{Well Twin (/well/BGW-07).} The schematic anchors depths; the IPR
+chart shows heated deliverability; the log-scale $\mu(T)$ chart shows how heat
+buys it. The state vector lists every live variable with units and tones.
+
+\paragraph{CSS Optimization.} Drag steam 410 $\rightarrow$ 500\,m$^3$: radius
+grows $\propto\sqrt{Q}$, SOR $\propto Q$. Reset, then add $+12$\,hr soak:
+retention rises for free. The steam/soak sweeps make diminishing returns
+visible; the heat audit accounts every GJ.
+
+\paragraph{SRP Optimization.} Drag SPM to 6.6: the card shoulder slides as
+fillage collapses; the sweep shows production plateauing while Goodman climbs.
+Return to 5.4. Read Goodman, float margin (lbf) and drag (lbf) as a force
+balance.
+
+\paragraph{Surface Optimizer.} Hover frontier bubbles (margin in INR/day per
+bubble); read the top-8 table; verify each ``why'' bullet against its numbers.
+Try arguing: change one control in What-If Lab and watch margin $\Delta$.
+
+\paragraph{Forecast.} Switch 7/14/30-day horizons; note the widening band.
+Find the BHT $\approx$ 60$^\circ$C crossing --- that is the re-steam trigger,
+visible weeks early.
+
+\paragraph{What-If Lab.} The header margin $\Delta$ settles every debate:
+green earns, red loses, and the baseline/scenario panels show the physical
+reason (radius, viscosity, fillage, Goodman).
+
+\paragraph{Risk \& Alerts.} Read thresholds first, then cards: mechanism in
+units, action in operations language. Disagree with a threshold, never guess
+one.
+
+\paragraph{Sensor Integrity.} Note the $+8.4^\circ$C residual against the
+$\pm1.5^\circ$C gate; press recalibrate and watch confidence restore. While
+flagged, recommendations use model BHT plus five corroborating channels.
+
+\paragraph{Engineering Basis.} Trace any number here: field claims to public
+sources, equations to references. End every demo on this page.
+
+\section{Guided tour (evaluator mode)}
+Fifteen stops mirror Section~7.2 with on-screen narration, hints (``try: push
+SPM to 6.6''), autoplay, dots for random access, and Esc to exit. Use it for
+live judging; use \texttt{VIDEO\_SCRIPT.md} for the recorded video.
+
+\section{Demo scripts}
+\textbf{3-minute judge path:} Mission Brief $\rightarrow$ Field Overview
+$\rightarrow$ BGW-07 $\rightarrow$ CSS slider move $\rightarrow$ SRP slider
+move $\rightarrow$ Optimizer knee $\rightarrow$ Risk threshold
+$\rightarrow$ Sensor recalibrate $\rightarrow$ Engineering Basis.
+\textbf{8--9 minute video:} follow \texttt{VIDEO\_SCRIPT.md} scenes 1--9
+verbatim (hook, problem, map, twin, CSS, SRP, optimiser, risk+sensors, audit
+close), \textasciitilde1,230 words at \textasciitilde140\,wpm.
+
+\section{Troubleshooting}
+Map grey/empty: no internet (tiles are live). Port busy: change \texttt{--port}.
+Charts blank after code edits: rerun build (type errors fail \texttt{tsc -b}
+first). Tour ring misplaced after resize: it re-measures on resize and
+route change automatically.
+
+% =====================================================================
+\chapter{Deployment}
+% =====================================================================
+The app is a static SPA bundle served as a Render \textbf{Web Service}:
+\begin{table}[h]
+\centering
+\caption{Render service settings (repo \texttt{Devansh-567/baghewala-oil-field}).\label{tab:render}}
+\begin{tabular}{lp{9.5cm}}
+\toprule
+\textbf{Field} & \textbf{Value} \\ \midrule
+Language / Region & Node / Oregon (US West) \\
+Branch & \texttt{main} \\
+Build command & \texttt{npm install; npm run build} \\
+Start command & \texttt{npm start} \;(runs \texttt{vite preview --host 0.0.0.0 --port \$\{PORT:-4173\}}) \\
+Compute & Free tier (0.1 CPU / 512\,MB) suffices for demo traffic \\
+\bottomrule
+\end{tabular}
+\end{table}
+Render injects \texttt{\$PORT} (default 10000); binding \texttt{0.0.0.0} is
+mandatory, and \texttt{vite preview} supplies SPA fallback so deep links such
+as \texttt{/well/BGW-07/css} return \texttt{index.html} (verified: HTTP 200 on
+\texttt{/} and \texttt{/field}). Local \texttt{npm start} on Windows/cmd needs
+an explicit port since \texttt{\$\{PORT:-\dots\}} is sh syntax --- e.g.\
+\texttt{npx vite preview --host 127.0.0.1 --port 4180}. Alternative: a Render
+\textbf{Static Site} with publish directory \texttt{dist/} (no start command).
+
+% =====================================================================
+\chapter{Results and Validation}
+% =====================================================================
+\begin{table}[h]
+\centering
+\caption{Calibration checks (all satisfied by construction + smoke tests).\label{tab:valid}}
+\begin{tabular}{lp{5cm}l}
+\toprule
+\textbf{Check} & \textbf{Expected} & \textbf{Result} \\ \midrule
+$\mu$ anchor @50$^\circ$C & 8,000--15,000\,cP, API-ordered & By Eq.~\ref{eq:mu50} \\
+$\mu(47^\circ$C) / $\mu(150^\circ$C) &
+\textasciitilde13.5k\,cP / \textasciitilde12\,cP & Matches comment audit \\
+Per-well rate & 15--45\,BOPD & Vogel + $F_p=0.42$ \\
+Field scaling & $\approx$1,202\,BOPD @33 wells & Shown beside 12-pad total \\
+Cycle SOR & 1--4, target $<3$ & 60-day flush window \\
+Production build & \texttt{tsc -b} + Vite success & \textasciitilde900 modules \\
+Serve smoke test & HTTP 200 on \texttt{/}, \texttt{/field} & Passed \\
+\bottomrule
+\end{tabular}
+\end{table}
+BGW-07 (showcase) solves to cycle 5, API 15.1, 680\,mD, pump 5.4\,SPM with
+positive float margin and sub-0.55 Goodman at its recommended point; pushing
+SPM to 6.6 inverts both --- the pump-off cliff evaluators can reproduce in
+seconds.
+
+% =====================================================================
+\chapter{Limitations and Future Work}
+% =====================================================================
+\begin{enumerate}
+  \item \textbf{No live SCADA yet:} providers are isolated (\texttt{src/data/*})
+    behind stable shapes, so a real feed swaps in without touching pages; the
+    drift-exclusion contract is already implemented.
+  \item \textbf{Productivity factor $F_p=0.42$} is literature-typical, not
+    history-matched to proprietary well files --- flagged openly in-app.
+  \item \textbf{Lumped heat model:} Marx--Langenheim + soak efficiency, not a
+    full thermal simulator (no CMG STARS coupling); multilayer and steam-override
+    effects are future work.
+  \item \textbf{Representative layout:} 12 pads compress the 52-well pattern;
+    full-field rollout needs the operator's survey coordinates.
+  \item \textbf{Roadmap:} history matching, per-well $F_p$ inversion, VFD
+    closed-loop setpoint export, Hindi/English bilingual UI, PWA offline tile
+    packs for field tablets.
+\end{enumerate}
+
+% =====================================================================
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+The twin delivers what SIH26120 asked: CSS and SRP optimised \emph{together}
+through one auditable chain, predictive heating/cooling/rate forecasts,
+force-based rod-float detection, and steam/energy minimisation in rupees per
+day --- presented on a real map, narrated by a guided tour, and traceable to
+published data and textbook equations. It is a decision-support prototype with
+an honest boundary: calibrated, not live --- and engineered so that going live
+is a data-plumbing task, not a rewrite.
+
+% =====================================================================
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{References}
+\bibitem{ML59} J.~W.~Marx and R.~H.~Langenheim, ``Reservoir heating by hot fluid
+injection,'' \textit{Trans.\ AIME}, vol.~216, pp.~312--315, 1959.
+\bibitem{BL66} T.~C.~Boberg and R.~B.~Lantz, ``Calculation of the production
+rate of a thermally stimulated well,'' \textit{J.\ Pet.\ Technol.}, Oct.\ 1966
+(SPE 1578-PA).
+\bibitem{Vogel68} J.~V.~Vogel, ``Inflow performance relationships for
+solution-gas drive wells,'' \textit{J.\ Pet.\ Technol.}, Jan.\ 1968.
+\bibitem{API11L} American Petroleum Institute, \textit{RP 11L: Design
+Calculations for Sucker-Rod Pumping Systems}, 5th ed.
+\bibitem{API11E} American Petroleum Institute, \textit{Spec.\ 11E: Specification
+for Pumping Units}.
+\bibitem{API11BR} American Petroleum Institute, \textit{RP 11BR: Care and
+Handling of Sucker Rods} (coupling SCF practice).
+\bibitem{EJ92} T.~A.~Everitt and J.~W.~Jennings, ``An improved finite-difference
+calculation of downhole dynamometer cards,'' SPE 18189, 1992.
+\bibitem{Mehrotra} A.~K.~Mehrotra and W.~Y.~Svrcek, ``Viscosity of compressed
+Athabasca bitumen,'' \textit{Can.\ J.\ Chem.\ Eng.}
+\bibitem{Arps45} J.~J.~Arps, ``Analysis of decline curves,''
+\textit{Trans.\ AIME}, vol.~160, 1945.
+\bibitem{IAPWS} IAPWS, \textit{Revised Release on the IAPWS Formulation 1995
+for the Thermodynamic Properties (IF97 steam tables)}.
+\bibitem{OILRF} Oil India Ltd., ``Rajasthan Fields --- Baghewala,''
+\url{https://www.oil-india.com/rajasthan-fields} (field data page).
+\bibitem{SPE535203} Singh et al., ``Case study for enhancement of production of
+heavy and highly viscous crude,'' SPE APOG 2023, Paper 535203.
+\bibitem{DGH} Directorate General of Hydrocarbons, National Data Repository,
+``Rajasthan Basin'' page.
+\bibitem{SIH} Smart India Hackathon 2026, Problem Statement SIH26120
+(Oil India Limited).
+\bibitem{TOI26} Times of India / News18 / ET Energy, Apr.\ 2026, Oil India
+record-production reports (1,202\,BOPD; CSS in 19 wells).
+\bibitem{Bhat12} G.~M.~Bhat et al., ``Geology and hydrocarbon potential of
+Neoproterozoic--Cambrian succession,'' \textit{Lyell Special Publications}
+SP366 (Jodhpur Sandstone context).
+\bibitem{React} Meta, React 18 documentation, \url{https://react.dev}.
+\bibitem{Leaflet} Leaflet 1.9 + OpenStreetMap tile usage policy
+(\url{https://operations.osmfoundation.org/policies/tiles/}).
+\bibitem{Recharts} Recharts 2.x documentation, \url{https://recharts.org}.
+\end{thebibliography}
+
+% =====================================================================
+\appendix
+\chapter{Judge Q\&A (one-line answers)}
+\begin{table}[h]
+\centering
+\begin{tabular}{p{5.5cm}p{9.5cm}}
+\toprule
+\textbf{Question} & \textbf{Answer} \\ \midrule
+Real or synthetic data? & Calibrated model: published bands reproduced by
+construction; layout representative; no live SCADA claimed. \\
+Why 12 wells, not 52? & Demo compression; totals scale linearly to the record
+(shown beside every total). \\
+Novelty vs CSS software? & The coupling: one fillage state joins heating to
+mechanics with INR-ranked optimisation. \\
+How is rod float detected? & Downstroke force balance; margin in lbf
+(900/250 thresholds). \\
+What is SOR here? & CWE steam / oil in the 60-day flush window; target $<3$. \\
+Can it take live SCADA? & Yes: isolated providers + drift-exclusion contract
+already implemented. \\
+Biggest limitation? & $F_p=0.42$ not field history-matched --- stated openly. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter{Glossary}
+\begin{itemize}
+  \item \textbf{CSS} --- Cyclic Steam Stimulation: inject $\rightarrow$ soak
+    $\rightarrow$ produce in the same well.
+  \item \textbf{SRP} --- Sucker-rod pump: beam unit + rod string + downhole
+    plunger.
+  \item \textbf{SOR} --- Steam-oil ratio; lower is better.
+  \item \textbf{BOPD / BHT / VIT / PML} --- barrels of oil per day; bottomhole
+    temperature; vacuum-insulated tubing; petroleum mining lease.
+  \item \textbf{IPR / Goodman / SPM / CWE} --- inflow performance relationship;
+    rod fatigue check; strokes per minute; cold-water equivalent.
+  \item \textbf{Pareto knee} --- the operating point where extra steam cost
+    starts outrunning production gain.
+\end{itemize}
+
+\chapter{Screenshot slots (Appendix C)}
+Figures~\ref{fig:map}--\ref{fig:pareto} are placeholders. Save 1920$\times$1080
+PNGs into \texttt{figures/} with the names below; recompile to embed them.
+\begin{figure}[h]\centering
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{18pt}
+\texttt{figures/field-overview.png}\\ \textit{Field Overview: OSM map + KPIs}\vspace{18pt}}}
+\caption{Field overview (insert screenshot).}\label{fig:map}\end{figure}
+\begin{figure}[h]\centering
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{18pt}
+\texttt{figures/well-ipr.png}\\ \textit{Well twin: IPR + $\mu(T)$ charts}\vspace{18pt}}}
+\caption{Well twin charts (insert screenshot).}\label{fig:ipr}\end{figure}
+\begin{figure}[h]\centering
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{18pt}
+\texttt{figures/css-sweeps.png}\\ \textit{CSS sweeps: steam vs soak economics}\vspace{18pt}}}
+\caption{CSS optimisation (insert screenshot).}\label{fig:css}\end{figure}
+\begin{figure}[h]\centering
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{18pt}
+\texttt{figures/srp-cards.png}\\ \textit{Surface + pump dynacards at 6.6\,SPM}\vspace{18pt}}}
+\caption{SRP cards (insert screenshot).}\label{fig:cards}\end{figure}
+\begin{figure}[h]\centering
+\fbox{\parbox{0.9\textwidth}{\centering\vspace{18pt}
+\texttt{figures/optimizer-pareto.png}\\ \textit{Pareto frontier + top-8 table}\vspace{18pt}}}
+\caption{Optimiser (insert screenshot).}\label{fig:pareto}\end{figure}
+
+\end{document}

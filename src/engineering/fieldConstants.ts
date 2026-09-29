@@ -127,16 +127,14 @@ export const PRODUCTION_BENCHMARKS = {
 } as const;
 
 /** Steam-table saturation temperature (°C) vs absolute pressure (bar) —
- *  IAPWS-IF97 fit valid 15–60 bar, ±1.5 °C. Lets judges cross-check injection
+ *  quadratic fit to the IAPWS-IF97 saturation line, valid 15–60 bar with
+ *  max error ~0.2 °C (table: 15→198.3, 20→212.4, 25→223.9, 30→233.9,
+ *  40→250.4, 50→263.9, 60→275.6 °C). Lets judges cross-check injection
  *  pressure → steam temperature without a black box. */
 export function saturationTempC(pressureBar: number): number {
   const p = Math.min(60, Math.max(15, pressureBar));
-  // Antoine-form fit to IAPWS-IF97 saturation line over CSS operating band
-  const A = 11.6703;
-  const B = 3816.44;
-  const C = -46.13;
-  const pKpa = p * 100;
-  const t = B / (A - Math.log(pKpa)) - C - 273.15;
+  const x = Math.log(p); // P in bar abs
+  const t = 117.7 + 12.554 * x + 6.354 * x * x;
   return Math.round(t * 10) / 10;
 }
 

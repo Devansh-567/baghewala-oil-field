@@ -8,27 +8,50 @@ import { Readout, SimTag, StatBlock } from '../components/common';
 import type { SrpPoint } from '../types';
 import { flowingBhpBar } from '../simulation/physics';
 
-function CardSvg({ data, color, title }: { data: Array<{ position: number; loadLb: number }>; color: string; title: string }) {
+function CardSvg({
+  data,
+  color,
+  title,
+  domain,
+  refLines,
+}: {
+  data: Array<{ position: number; loadLb: number }>;
+  color: string;
+  title: string;
+  /** Fixed [lo, hi] load scale — shared across renders so the loop visibly
+   *  grows, shifts and pounds as the operating point moves instead of
+   *  rescaling itself into an identical box. */
+  domain: readonly [number, number];
+  refLines?: Array<{ value: number; label: string; dashed?: boolean }>;
+}) {
   const w = 300;
   const h = 190;
-  const loads = data.map((d) => d.loadLb);
-  const lo = Math.min(...loads);
-  const hi = Math.max(...loads);
-  const span = Math.max(500, hi - lo);
+  const [lo, hi] = domain;
+  const span = Math.max(1, hi - lo);
   const X = (p: number) => 34 + p * (w - 48);
   const Y = (l: number) => 12 + (1 - (l - lo) / span) * (h - 40);
   const d = data.map((p, i) => `${i === 0 ? 'M' : 'L'} ${X(p.position).toFixed(1)} ${Y(p.loadLb).toFixed(1)}`).join(' ') + ' Z';
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => lo + t * span);
   return (
     <div>
       <div className="cite" style={{ marginBottom: 4 }}>{title}</div>
       <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="190">
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1="34" y1={Y(t)} x2={w - 8} y2={Y(t)} stroke="var(--border-soft)" strokeWidth={t === ticks[0] ? 1 : 0.5} opacity={0.7} />
+            <text x="2" y={Y(t) + 3} fontSize="8" fill="var(--text-faint)">{(t / 1000).toFixed(1)}k</text>
+          </g>
+        ))}
         <line x1="34" y1="10" x2="34" y2={h - 24} stroke="var(--border)" />
         <line x1="34" y1={h - 24} x2={w - 8} y2={h - 24} stroke="var(--border)" />
-        <text x="2" y="18" fontSize="9" fill="var(--text-faint)">lb</text>
         <text x={w - 52} y={h - 8} fontSize="9" fill="var(--text-faint)">stroke →</text>
+        {refLines?.map((r) => (
+          <g key={r.label}>
+            <line x1="34" y1={Y(r.value)} x2={w - 8} y2={Y(r.value)} stroke={color} strokeWidth="1" strokeDasharray="5 3" opacity={0.85} />
+            <text x={w - 8} y={Y(r.value) - 3} fontSize="8" fill={color} textAnchor="end">{r.label}</text>
+          </g>
+        ))}
         <path d={d} fill={`${color}22`} stroke={color} strokeWidth="1.75" />
-        <text x="40" y="26" fontSize="9" fill="var(--text-faint)">{Math.round(hi).toLocaleString()} lb</text>
-        <text x="40" y={h - 30} fontSize="9" fill="var(--text-faint)">{Math.round(lo).toLocaleString()} lb</text>
       </svg>
     </div>
   );
@@ -50,18 +73,39 @@ export default function SrpOptimization({ wellId }: { wellId: string }) {
 
   const chain = solveCoupledChain(cssPlan, point, well.reservoirTempC, well.reservoirPressureBar, well.apiGravity, well.waterCutPct / 100, well.permeabilityMD);
 
-  // Mechanics + cards at live point
+  // Mechanics + cards at live point — recomputed every render (97 points is
+  // microseconds; no memo, so the cards can never go stale behind the sliders).
   const pwf = flowingBhpBar(well.reservoirPressureBar, chain.fillageFrac * 100);
   const inflow = vogelIpr(well.reservoirPressureBar, pwf, chain.viscosityCp, chain.heatedRadiusM, well.permeabilityMD).rateAtPwfBopd;
   const mech = apiRp11LMechanics(point.spm, point.strokeIn, SRP.plungerDiameterIn, SRP.pumpDepthM, chain.viscosityCp, well.waterCutPct / 100, chain.fillageFrac);
   const fill = pumpFillageFrac(inflow, mech.pumpDisplacementBpd);
-  const surface = useMemo(
-    () => synthesizeSurfaceCard(mech, fill, chain.viscosityCp, 0.06, 0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mech.peakPolishedRodLoadLb, mech.minPolishedRodLoadLb, fill, chain.viscosityCp]
-  );
-  const pump = useMemo(() => synthesizePumpCard(surface, mech), [surface, mech]);
+  const surface = synthesizeSurfaceCard(mech, fill, chain.viscosityCp, 0.06, 0, point.spm, point.strokeIn);
+  const pump = synthesizePumpCard(surface, mech);
   const rf = rodFloatAnalysis(mech, fill);
+
+  // Fixed load-scale envelope per well: mechanics evaluated over the full
+  // slider ranges (thermal state is fixed on this page), so both cards keep
+  // one stable axis and every slider move reads as loop motion on video.
+  const envelope = useMemo(() => {
+    let sLo = Infinity;
+    let sHi = -Infinity;
+    let pLo = Infinity;
+    let pHi = -Infinity;
+    for (const s of [3, 4.8, 6.6]) {
+      for (const st of [64, 75, 86]) {
+        const m = apiRp11LMechanics(s, st, SRP.plungerDiameterIn, SRP.pumpDepthM, chain.viscosityCp, well.waterCutPct / 100, 0.7);
+        const span = Math.max(600, m.peakPolishedRodLoadLb - m.minPolishedRodLoadLb);
+        sLo = Math.min(sLo, m.minPolishedRodLoadLb - 0.22 * span);
+        sHi = Math.max(sHi, m.peakPolishedRodLoadLb + 0.22 * span);
+        const pTop = (m.peakPolishedRodLoadLb - m.rodWeightBuoyedLb) * 0.92;
+        const pBot = (m.minPolishedRodLoadLb - m.rodWeightBuoyedLb) * 0.92;
+        pLo = Math.min(pLo, Math.min(pTop, pBot) - 0.2 * span);
+        pHi = Math.max(pHi, Math.max(pTop, pBot) + 0.2 * span);
+      }
+    }
+    return { surface: [sLo, sHi] as const, pump: [pLo, pHi] as const };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wellId, chain.viscosityCp]);
 
   const spmSweep = useMemo(() => {
     const pts: Array<{ spm: number; production: number; fillage: number; goodman: number }> = [];
@@ -105,13 +149,29 @@ export default function SrpOptimization({ wellId }: { wellId: string }) {
           <button className="btn" onClick={() => setPoint({ spm: well.spm, strokeIn: well.strokeIn, vfdHz: well.vfdHz })}>Reset to current point</button>
           <div className="divider" />
           <div className="grid grid-2" data-tour="srp-cards">
-            <CardSvg data={surface} color="var(--amber)" title={`Surface card — PPRL ${mech.peakPolishedRodLoadLb.toLocaleString()} lb / MPRL ${mech.minPolishedRodLoadLb.toLocaleString()} lb`} />
-            <CardSvg data={pump} color="var(--blue)" title={`Pump (downhole) card — fluid load ${mech.fluidLoadLb.toLocaleString()} lb · fillage ${(fill * 100).toFixed(1)}%`} />
+            <CardSvg
+              data={surface}
+              color="var(--amber)"
+              title={`Surface card — PPRL ${mech.peakPolishedRodLoadLb.toLocaleString()} lb / MPRL ${mech.minPolishedRodLoadLb.toLocaleString()} lb`}
+              domain={envelope.surface}
+              refLines={[
+                { value: mech.peakPolishedRodLoadLb, label: `PPRL ${(mech.peakPolishedRodLoadLb / 1000).toFixed(1)}k` },
+                { value: mech.minPolishedRodLoadLb, label: `MPRL ${(mech.minPolishedRodLoadLb / 1000).toFixed(1)}k` },
+              ]}
+            />
+            <CardSvg
+              data={pump}
+              color="var(--blue)"
+              title={`Pump (downhole) card — fluid load ${mech.fluidLoadLb.toLocaleString()} lb · fillage ${(fill * 100).toFixed(1)}%`}
+              domain={envelope.pump}
+              refLines={[{ value: mech.fluidLoadLb * 0.92, label: `Fo ${(mech.fluidLoadLb / 1000).toFixed(1)}k` }]}
+            />
           </div>
           <div className="chart-note">
-            Card synthesis follows Everitt–Jennings (SPE 18189) character: fluid-pound shoulder grows as fillage
-            falls below ~92%; viscous fattening widens with μ; gas rounds the compression corner. Read the
-            shoulder position — it is the fillage meter.
+            Both cards share one fixed load scale per well — the loop itself grows, shifts and pounds as you
+            move SPM, stroke or VFD. Fluid-pound shoulder grows as fillage falls below ~92%; high SPM skews
+            the loop (rod-string inertia) and rounds the top-right corner; longer stroke widens elastic
+            rounding. Read the shoulder position — it is the fillage meter.
           </div>
         </div>
 
