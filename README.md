@@ -2,6 +2,12 @@
 
 CSS + SRP integrated decision-support system for Oil India Limited — SIH 2026 Problem Statement SIH26120.
 
+## YouTube
+
+[Watch the Project Demo on YouTube](https://youtu.be/H-ZebeYpsYc)
+[Project Report](https://drive.google.com/drive/u/1/folders/1MOWUXWEcWwqY_-9lLEU-eFsuUZSbtZxi)
+
+
 ## What this is
 
 A coupled well-to-surface engineering model for heavy-oil CSS wells in the Jodhpur Sandstone:
